@@ -1,10 +1,36 @@
 import os
+import requests
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
 import json
+
+def get_huggingface_sentiment(text):
+    hf_api_key = os.environ.get('HUGGINGFACE_API_KEY')
+    if not hf_api_key:
+        return None
+    
+    try:
+        API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
+        headers = {"Authorization": f"Bearer {hf_api_key}"}
+        response = requests.post(API_URL, headers=headers, json={"inputs": text}, timeout=10)
+        
+        if response.status_code == 200:
+            result = response.json()
+            if result and len(result) > 0:
+                sentiments = result[0]
+                top_sentiment = max(sentiments, key=lambda x: x['score'])
+                return {
+                    "label": top_sentiment['label'],
+                    "score": round(top_sentiment['score'] * 100, 1),
+                    "all_scores": {s['label']: round(s['score'] * 100, 1) for s in sentiments}
+                }
+    except Exception as e:
+        print(f"HuggingFace API error: {e}")
+    
+    return None
 
 app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
@@ -178,6 +204,8 @@ def get_stock_prediction(symbol):
             sentiment = "Neutral"
             confidence = 50 + (abs(recent_changes) * 2)
         
+        hf_sentiment = get_huggingface_sentiment(f"{info.get('shortName', symbol)} stock with {trend} trend and {volatility:.1f}% volatility")
+        
         prediction_data = {
             "symbol": symbol.upper(),
             "currentPrice": round(current_price, 2),
@@ -197,7 +225,8 @@ def get_stock_prediction(symbol):
                 "conservative": round(current_price * (1 + (recent_changes / 100) * 0.5), 2),
                 "moderate": round(current_price * (1 + (recent_changes / 100)), 2),
                 "aggressive": round(current_price * (1 + (recent_changes / 100) * 1.5), 2)
-            }
+            },
+            "hfSentiment": hf_sentiment
         }
         
         return jsonify(prediction_data)

@@ -297,6 +297,25 @@ async function loadPrediction(symbol) {
         document.getElementById('target-moderate').textContent = `$${targets.moderate}`;
         document.getElementById('target-aggressive').textContent = `$${targets.aggressive}`;
         
+        const hfSection = document.getElementById('hf-sentiment-section');
+        if (data.hfSentiment) {
+            hfSection.classList.remove('hidden');
+            const label = document.getElementById('hf-sentiment-label');
+            label.textContent = data.hfSentiment.label;
+            label.className = `hf-label ${data.hfSentiment.label.toLowerCase()}`;
+            document.getElementById('hf-sentiment-score').textContent = `${data.hfSentiment.score}% confidence`;
+            
+            const scores = data.hfSentiment.all_scores;
+            document.getElementById('hf-positive-bar').style.width = `${scores.positive || 0}%`;
+            document.getElementById('hf-positive-val').textContent = `${scores.positive || 0}%`;
+            document.getElementById('hf-neutral-bar').style.width = `${scores.neutral || 0}%`;
+            document.getElementById('hf-neutral-val').textContent = `${scores.neutral || 0}%`;
+            document.getElementById('hf-negative-bar').style.width = `${scores.negative || 0}%`;
+            document.getElementById('hf-negative-val').textContent = `${scores.negative || 0}%`;
+        } else {
+            hfSection.classList.add('hidden');
+        }
+        
     } catch (error) {
         console.error('Error loading prediction:', error);
         document.getElementById('ai-analysis').textContent = 'Unable to load prediction. Please try again.';
