@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STKPP - Stock Price Predictor</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/png" href="https://github.com/fluidicon.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" height="32" viewBox="0 0 24 24" width="32" fill="#ffffff">
+                    <path d="M3.5 18.5L9.5 12.5L13.5 16.5L22 6.92L20.59 5.5L13.5 13.5L9.5 9.5L2 17L3.5 18.5Z"/>
+                </svg>
+                <span>STKPP</span>
+            </div>
+            <nav class="nav">
+                <a href="#" class="nav-link active" data-page="home">Home</a>
+                <a href="#" class="nav-link" data-page="trending">Trending</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section id="home-section" class="section active">
+            <div class="hero">
+                <h1>Stock Price Predictor</h1>
+                <p class="hero-subtitle">AI-powered stock analysis and predictions using real-time market data</p>
+                
+                <div class="search-container">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="stock-search" class="search-input" placeholder="Search stocks (e.g., AAPL, GOOGL, MSFT)..." autocomplete="off">
+                        <div id="search-results" class="search-results"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stock-details" class="stock-details hidden">
+                <div class="stock-header">
+                    <div class="stock-title">
+                        <h2 id="stock-name">-</h2>
+                        <span id="stock-symbol" class="stock-symbol">-</span>
+                    </div>
+                    <div class="stock-price-container">
+                        <span id="stock-price" class="stock-price">-</span>
+                        <span id="stock-change" class="stock-change">-</span>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="overview">Overview</button>
+                    <button class="tab-btn" data-tab="chart">Chart</button>
+                    <button class="tab-btn" data-tab="prediction">AI Prediction</button>
+                </div>
+
+                <div id="overview-tab" class="tab-content active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">Open</span>
+                            <span id="stat-open" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Previous Close</span>
+                            <span id="stat-prev-close" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Day High</span>
+                            <span id="stat-high" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Day Low</span>
+                            <span id="stat-low" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Volume</span>
+                            <span id="stat-volume" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Market Cap</span>
+                            <span id="stat-market-cap" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">P/E Ratio</span>
+                            <span id="stat-pe" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">EPS</span>
+                            <span id="stat-eps" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">52 Week High</span>
+                            <span id="stat-52high" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">52 Week Low</span>
+                            <span id="stat-52low" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Beta</span>
+                            <span id="stat-beta" class="stat-value">-</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Dividend Yield</span>
+                            <span id="stat-dividend" class="stat-value">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h3>About</h3>
+                        <p id="stock-description">-</p>
+                        <div class="info-tags">
+                            <span id="stock-sector" class="info-tag">-</span>
+                            <span id="stock-industry" class="info-tag">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chart-tab" class="tab-content">
+                    <div class="chart-controls">
+                        <button class="period-btn active" data-period="1mo">1M</button>
+                        <button class="period-btn" data-period="3mo">3M</button>
+                        <button class="period-btn" data-period="6mo">6M</button>
+                        <button class="period-btn" data-period="1y">1Y</button>
+                        <button class="period-btn" data-period="5y">5Y</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="stock-chart"></canvas>
+                    </div>
+                </div>
+
+                <div id="prediction-tab" class="tab-content">
+                    <div class="prediction-loading hidden" id="prediction-loading">
+                        <div class="spinner"></div>
+                        <p>Analyzing stock with AI...</p>
+                    </div>
+                    
+                    <div id="prediction-content">
+                        <div class="prediction-header">
+                            <div class="sentiment-badge" id="sentiment-badge">-</div>
+                            <div class="confidence-meter">
+                                <span>Confidence:</span>
+                                <div class="meter-bar">
+                                    <div id="confidence-fill" class="meter-fill"></div>
+                                </div>
+                                <span id="confidence-value">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-card">
+                            <h3>AI Analysis</h3>
+                            <p id="ai-analysis">-</p>
+                        </div>
+                        
+                        <div class="indicators-grid">
+                            <div class="indicator-card">
+                                <h4>Technical Indicators</h4>
+                                <div class="indicator-list">
+                                    <div class="indicator-item">
+                                        <span>RSI (14)</span>
+                                        <span id="ind-rsi">-</span>
+                                    </div>
+                                    <div class="indicator-item">
+                                        <span>MA (20)</span>
+                                        <span id="ind-ma20">-</span>
+                                    </div>
+                                    <div class="indicator-item">
+                                        <span>MA (50)</span>
+                                        <span id="ind-ma50">-</span>
+                                    </div>
+                                    <div class="indicator-item">
+                                        <span>Support</span>
+                                        <span id="ind-support">-</span>
+                                    </div>
+                                    <div class="indicator-item">
+                                        <span>Resistance</span>
+                                        <span id="ind-resistance">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="indicator-card">
+                                <h4>Price Targets</h4>
+                                <div class="indicator-list">
+                                    <div class="indicator-item">
+                                        <span>Conservative</span>
+                                        <span id="target-conservative">-</span>
+                                    </div>
+                                    <div class="indicator-item">
+                                        <span>Moderate</span>
+                                        <span id="target-moderate">-</span>
+                                    </div>
+                                    <div class="indicator-item">
+                                        <span>Aggressive</span>
+                                        <span id="target-aggressive">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="disclaimer">
+                            <strong>Disclaimer:</strong> This prediction is for educational purposes only and should not be considered financial advice. Always do your own research before making investment decisions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="trending-section" class="section">
+            <h2 class="section-title">Trending Stocks</h2>
+            <div id="trending-grid" class="trending-grid">
+                <div class="loading-placeholder">Loading trending stocks...</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>STKPP - Stock Price Predictor | Powered by yfinance & Gemini AI</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
